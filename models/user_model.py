@@ -1,9 +1,9 @@
 from pydantic import BaseModel
 
-class User(BaseModel):
+class UserModel(BaseModel):
 	username: str
 	password: str
-	moderator: bool
+	moderator: bool = False
 	school_name: str
 	grade: int
 	class_num: int

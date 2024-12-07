@@ -1,4 +1,4 @@
-from . import MongoDB
+from .db import MongoDB
 from typing import Any, Dict, Optional
 from pymongo.results import InsertOneResult, UpdateResult, DeleteResult
 from bson import ObjectId
@@ -9,7 +9,10 @@ class User(MongoDB):
 		self.collection = self.connect()["users"]
 
 	async def get_user(self, user_id: str) -> Optional[Dict[str, Any]]:
-		return await self.collection.find_one({"user_id": user_id})
+		return await self.collection.find_one({"_id": ObjectId(user_id)})
+	
+	async def get_user_by_username(self, username: str) -> Optional[Dict[str, Any]]:
+		return await self.collection.find_one({"username": username})
 
 	async def create_user(
 		self, 
@@ -18,7 +21,7 @@ class User(MongoDB):
 		moderator: bool, 
 		school_name: str, 
 		grade: int, 
-		class_num: int
+		class_num: int,
 	) -> InsertOneResult:
 		user_data = {
 			"username": username,
@@ -32,13 +35,13 @@ class User(MongoDB):
 
 	async def update_user(
 		self,
-		userId: str,
+		user_id: str,
 		username: str,
 		password: str,
 		moderator: bool,
 		school_name: str,
 		grade: int,
-		class_num: int
+		class_num: int,
 	) -> UpdateResult:
 		update_data = {
 			"username": username,
@@ -49,7 +52,7 @@ class User(MongoDB):
 			"class_num": class_num
 		}
 		return await self.collection.update_one(
-			{"_id": ObjectId(userId)},
+			{"_id": ObjectId(user_id)},
 			{"$set": update_data}
 		)
 

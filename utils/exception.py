@@ -8,7 +8,10 @@ class CalenderException(Exception):
 class ScheduleException(CalenderException):
 	"""Exception class for Schedule module"""
 
-class SheduleNotFoundException(ScheduleException):
+class UserException(CalenderException):
+	"""Exception class for User module"""
+
+class ScheduleNotFoundException(ScheduleException):
 	"""Exception class for Schedule not found"""
 
 class ScheduleCreationException(ScheduleException):
@@ -22,3 +25,6 @@ class ScheduleDeleteException(ScheduleException):
 
 class ScheduleDateException(ScheduleException):
 	"""Exception class for Schedule date"""
+
+class UserNotFoundException(UserException):
+	"""Exception class for User not found"""
