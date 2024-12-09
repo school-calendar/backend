@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException
-from database.user import User
-from models.user_model import UserModel
-from utils.exception import UserNotFoundException
-from utils.password import hash_password
-from utils.jwt import create_access_token
+from Calendar.database.user import User
+from Calendar.models.user_model import UserModel
+from Calendar.utils.exception import UserNotFoundException
+from Calendar.utils.password import hash_password
+from Calendar.utils.user import fetch_user
+from Calendar.utils.jwt import create_access_token
 from typing import Dict
 from bcrypt import checkpw
 
@@ -27,22 +28,7 @@ async def sign_in(username: str, password: str):
 
 @router.get("/{username}", response_model=Dict)
 async def get_user(username: str):
-	try:
-		user = await user_db.get_user_by_username(username)
-		if not user:
-			raise UserNotFoundException("User not found")
-		return {
-			"user_id": str(user["_id"]),
-			"username": user["username"],
-			"moderator": user["moderator"],
-			"school_name": user["school_name"],
-			"grade": user["grade"],
-			"class_num": user["class_num"]
-		}
-	except UserNotFoundException as e:
-		raise HTTPException(status_code=404, detail=str(e))
-	except Exception as e:
-		raise HTTPException(status_code=500, detail=str(e))
+	return await fetch_user(username)
 
 @router.post("/signup", response_model=str)
 async def create_user(user: UserModel):
@@ -75,7 +61,8 @@ async def update_user(user_id: str, user: UserModel):
 			moderator=user.moderator,
 			school_name=user.school_name,
 			grade=user.grade,
-			class_num=user.class_num
+			class_num=user.class_num,
+			school_schedule_added=user.school_schedule_added
 		)
 		if result.modified_count == 0:
 			raise HTTPException(status_code=404, detail="User not found")

@@ -1,6 +1,12 @@
+import os
+from dotenv import find_dotenv, load_dotenv
 from fastapi import FastAPI, Depends
+from Calendar.router import router
+from Calendar.module.sentry import init_sentry
 
-from router import router
+load_dotenv(find_dotenv())
+
+init_sentry(dsn=os.getenv("SENTRY_DSN"))
 
 app = FastAPI(
 	title="School Calendar API",

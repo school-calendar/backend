@@ -1,8 +1,8 @@
 from .db import MongoDB
 from typing import Any, List, Dict, Optional
 from bson import ObjectId
-from utils.exception import ScheduleDateException, ScheduleDeleteException, ScheduleUpdateException, ScheduleCreationException
-from models.schedule_model import ScheduleModel
+from Calendar.utils.exception import ScheduleDateException, ScheduleDeleteException, ScheduleUpdateException, ScheduleCreationException
+from Calendar.models.schedule_model import ScheduleModel
 
 class Schedule(MongoDB):
 	def __init__(self) -> None:
@@ -33,7 +33,6 @@ class Schedule(MongoDB):
 			return [ScheduleModel.get_schedule_id({**doc, "schedule_id": str(doc["_id"])}) for doc in documents]
 		except Exception as e:
 			raise ScheduleDateException(f"Failed to fetch all schedules: {str(e)}")
-
 
 	async def create_schedule(self, user_id: str, start_date: str, end_date: str, school_schedule: bool, schedule: str) -> str:
 		try:
@@ -72,3 +71,9 @@ class Schedule(MongoDB):
 			return schedule_id
 		except Exception as e:
 			raise ScheduleDeleteException(f"Failed to delete schedule: {str(e)}")
+		
+	async def delete_schedules(self, user_id: str) -> None:
+		try:
+			await self.collection.delete_many({"user_id": user_id})
+		except Exception as e:
+			raise ScheduleDeleteException(f"Failed to delete schedules: {str(e)}")

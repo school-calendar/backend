@@ -7,3 +7,4 @@ class UserModel(BaseModel):
 	school_name: str
 	grade: int
 	class_num: int
+	school_schedule_added: bool = False

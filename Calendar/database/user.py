@@ -1,4 +1,5 @@
 from .db import MongoDB
+from .schedule import Schedule as schedule_db
 from typing import Any, Dict, Optional
 from pymongo.results import InsertOneResult, UpdateResult, DeleteResult
 from bson import ObjectId
@@ -29,7 +30,8 @@ class User(MongoDB):
 			"moderator": moderator,
 			"school_name": school_name,
 			"grade": grade,
-			"class_num": class_num
+			"class_num": class_num,
+			"school_schedule_added": False
 		}
 		return await self.collection.insert_one(user_data)
 
@@ -42,6 +44,7 @@ class User(MongoDB):
 		school_name: str,
 		grade: int,
 		class_num: int,
+		school_schedule_added: bool,
 	) -> UpdateResult:
 		update_data = {
 			"username": username,
@@ -49,7 +52,8 @@ class User(MongoDB):
 			"moderator": moderator,
 			"school_name": school_name,
 			"grade": grade,
-			"class_num": class_num
+			"class_num": class_num,
+			"school_schedule_added": school_schedule_added
 		}
 		return await self.collection.update_one(
 			{"_id": ObjectId(user_id)},
@@ -57,4 +61,6 @@ class User(MongoDB):
 		)
 
 	async def delete_user(self, user_id: str) -> DeleteResult:
+		# Delete user's schedules
+		await schedule_db().delete_schedules(user_id)
 		return await self.collection.delete_one({"_id": ObjectId(user_id)})
