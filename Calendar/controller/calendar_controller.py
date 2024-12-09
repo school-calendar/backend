@@ -25,34 +25,32 @@ async def get_school_calendar(username: str, year: str):
 		user = await user_db.get_user_by_username(username)
 		if not user:
 			raise UserNotFoundException("User not found")
-		
-		if user["school_schedule_added"]:
-			raise HTTPException(status_code=400, detail="School schedule already added")
 
 		school_name = user["school_name"]
 		
 		school_schedules = await get_academic_calendar(neis, school_name, year)
 
-		for schedule in school_schedules:
-			print(schedule)
-			await schedule_db.create_schedule(
+		if not user["school_schedule_added"]:
+			for schedule in school_schedules:
+				await schedule_db.create_schedule(
+					user_id = str(user["_id"]),
+					start_date = schedule["date"],
+					end_date = schedule["date"],
+					school_schedule = True,
+					schedule = schedule["schedule"]
+				)
+
+			await user_db.update_user(
 				user_id = str(user["_id"]),
-				start_date = schedule["date"],
-				end_date = schedule["date"],
-				school_schedule = True,
-				schedule = schedule["schedule"]
+				username = user["username"],
+				password = user["password"],
+				moderator = user["moderator"],
+				school_name = user["school_name"],
+				grade = user["grade"],
+				class_num = user["class_num"],
+				school_schedule_added = True
 			)
 
-		await user_db.update_user(
-			user_id = str(user["_id"]),
-			username = user["username"],
-			password = user["password"],
-			moderator = user["moderator"],
-			school_name = user["school_name"],
-			grade = user["grade"],
-			class_num = user["class_num"],
-			school_schedule_added = True
-		)
 		return school_schedules
 	
 	except UserNotFoundException as e:
