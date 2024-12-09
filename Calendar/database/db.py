@@ -5,7 +5,7 @@ from typing import Any
 
 load_dotenv(find_dotenv())
 
-MONGO_URI = os.getenv("MONGO_URI")
+MONGO_URI = os.getenv("MONGODB_URI")
 
 class MongoDB:
 	def __init__(self) -> None:
@@ -14,6 +14,7 @@ class MongoDB:
 
 	def connect(self) -> Any:
 		print("Connected Successfully to MongoDB")
+		print(MONGO_URI)
 		return self.db
 
 	async def close(self) -> None:
