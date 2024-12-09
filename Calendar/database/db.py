@@ -5,13 +5,12 @@ from typing import Any
 
 load_dotenv(find_dotenv())
 
+MONGO_URI = os.getenv("MONGO_URI")
+
 class MongoDB:
 	def __init__(self) -> None:
-		self.client = AsyncIOMotorClient(
-			os.getenv("MONGO_URI", "mongodb://localhost:27017"),
-			serverSelectionTimeoutMS=5000
-		)
-		self.db = self.client[os.getenv("MONGO_DB", "default")]
+		self.client = AsyncIOMotorClient(MONGO_URI)
+		self.db = self.client["calendar"]
 
 	def connect(self) -> Any:
 		print("Connected Successfully to MongoDB")
