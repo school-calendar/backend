@@ -14,7 +14,6 @@ class MongoDB:
 
 	def connect(self) -> Any:
 		print("Connected Successfully to MongoDB")
-		print(MONGO_URI)
 		return self.db
 
 	async def close(self) -> None:
